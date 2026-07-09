@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django URL Shortener</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; margin-top: 100px; background-color: #f4f4f9; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        input { width: 80%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
+        button { padding: 12px 24px; background-color: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        #result { margin-top: 30px; font-size: 18px; font-weight: bold; color: #28a745; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Django URL Shortener</h1>
+        <p>Paste your massive URL below to get a clean, short alias!</p>
+        
+        <input type="text" id="long-url" placeholder="https://www.verylongwebsite.com/article/123">
+        <button onclick="shortenUrl()">Shorten My URL</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // 1. The main function to shorten the URL
+        async function shortenUrl() {
+            const originalUrl = document.getElementById('long-url').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!originalUrl) {
+                resultDiv.innerHTML = "<span style='color: red;'>Please enter a URL!</span>";
+                return;
+            }
+
+            resultDiv.innerText = "Shortening...";
+
+            try {
+                const response = await fetch('/api/shorten/', {
+                    method: 'POST', 
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        "original_url": originalUrl
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    
+                    resultDiv.innerHTML = `
+                        Success! <br><br> 
+                        <a href="${data.short_url}" target="_blank" style="font-size: 20px;">${data.short_url}</a>
+                        <br><br>
+                        <button onclick="copyToClipboard('${data.short_url}')" style="background-color: #28a745; padding: 8px 16px; font-size: 14px;">Copy Link</button>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<span style='color: red;'>Error: ${data.message}</span>`;
+                }
+
+            } catch (error) {
+                resultDiv.innerHTML = "<span style='color: red;'>Something went wrong reaching the server.</span>";
+            }
+        }
+
+        // 2. NEW FUNCTION: This runs when the Copy Button is clicked
+        function copyToClipboard(textToCopy) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                
+                alert("Link copied to clipboard!");
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+            });
+        }
+    </script>
+</body>
+</html>

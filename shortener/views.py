@@ -35,3 +35,7 @@ def redirect_url(request, short_alias):
     
     return redirect(url_object.original_url)
     
+    
+def home_page(request):
+    
+    return render(request, "homepage.html")
