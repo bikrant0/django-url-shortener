@@ -28,7 +28,7 @@
     </div>
 
     <script>
-        // 1. The main function to shorten the URL
+        
         async function shortenUrl() {
             const originalUrl = document.getElementById('long-url').value;
             const resultDiv = document.getElementById('result');
@@ -70,7 +70,7 @@
             }
         }
 
-        // 2. NEW FUNCTION: This runs when the Copy Button is clicked
+        
         function copyToClipboard(textToCopy) {
             navigator.clipboard.writeText(textToCopy).then(() => {
                 
